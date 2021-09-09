@@ -3,16 +3,12 @@ import VueRouter from "vue-router";
 import App from "./App.vue";
 import store from "./store/store";
 import CatalogueView from "./views/CatalogueView";
-import InstitutionView from "./views/InstitutionView";
-import DatabankView from "./views/DatabankView";
+import ResourceDetailsView from "./views/ResourceDetailsView";
 import TableView from "./views/TableView";
 import NetworkView from "./views/NetworkView";
 import ReleasesView from "./views/ReleasesView";
-import DatasourceView from "./views/DatasourceView";
-import ModelView from "./views/ModelView";
 import ResourceListView from "./views/ResourceListView";
 import ContactView from "./views/ContactView";
-import StudiesView from "./views/StudiesView";
 import VariableView from "./views/VariableView";
 import VariableMappingsView from "./views/VariableMappingsView";
 import TableMappingsView from "./views/TableMappingsView";
@@ -99,7 +95,7 @@ const router = new VueRouter({
       path: "/releases",
       props: (route) => ({
         searchTerm: route.query.q,
-        tableName: "Release",
+        tableName: "Releases",
       }),
       component: ResourceListView,
     },
@@ -130,7 +126,7 @@ const router = new VueRouter({
       path: "/tablemappings",
       props: (route) => ({
         searchTerm: route.query.q,
-        tableName: "Tablemappings",
+        tableName: "TableMappings",
       }),
       component: ResourceListView,
     },
@@ -145,9 +141,13 @@ const router = new VueRouter({
     },
     {
       name: "institution",
-      path: "/institutions/:acronym",
-      component: InstitutionView,
-      props: true,
+      path: "/institutions/:pid",
+      component: ResourceDetailsView,
+      props: (route) => ({
+        table: "Institutions",
+        color: "dark",
+        filter: { pid: { equals: route.params.pid } },
+      }),
     },
 
     {
@@ -158,33 +158,49 @@ const router = new VueRouter({
     },
     {
       name: "databank",
-      path: "/databanks/:acronym",
-      component: DatabankView,
-      props: true,
+      path: "/databanks/:pid",
+      component: ResourceDetailsView,
+      props: (route) => ({
+        table: "Databanks",
+        color: "info",
+        filter: { pid: { equals: route.params.pid } },
+      }),
     },
     {
       name: "cohort",
-      path: "/cohorts/:acronym",
+      path: "/cohorts/:pid",
       component: CohortView,
       props: true,
     },
     {
       name: "datasource",
-      path: "/datasources/:acronym",
-      component: DatasourceView,
-      props: true,
+      path: "/datasources/:pid",
+      component: ResourceDetailsView,
+      props: (route) => ({
+        table: "Datasources",
+        color: "secondary",
+        filter: { pid: { equals: route.params.pid } },
+      }),
     },
     {
       name: "model",
       path: "/models/:acronym",
-      component: ModelView,
-      props: true,
+      component: ResourceDetailsView,
+      props: (route) => ({
+        table: "Models",
+        color: "warning",
+        filter: { pid: { equals: route.params.pid } },
+      }),
     },
     {
       name: "network",
-      path: "/networks/:acronym",
-      props: true,
-      component: NetworkView,
+      path: "/networks/:pid",
+      component: ResourceDetailsView,
+      props: (route) => ({
+        table: "Networks",
+        color: "danger",
+        filter: { pid: { equals: route.params.pid } },
+      }),
     },
     {
       name: "contact",
@@ -194,9 +210,13 @@ const router = new VueRouter({
     },
     {
       name: "studie",
-      path: "/studies/:acronym",
-      props: true,
-      component: StudiesView,
+      path: "/studies/:pid",
+      component: ResourceDetailsView,
+      props: (route) => ({
+        table: "Studies",
+        color: "success",
+        filter: { pid: { equals: route.params.pid } },
+      }),
     },
     {
       name: "variable",
