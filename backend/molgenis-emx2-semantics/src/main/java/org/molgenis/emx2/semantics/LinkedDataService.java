@@ -4,12 +4,14 @@ import static org.molgenis.emx2.SelectColumn.s;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -153,7 +155,7 @@ public class LinkedDataService {
               row.put(c.getName(), ((Map<String, Object>) row.get(c.getName())).get(ref.getName()));
             } else if (c.isRef() && c.isOntology()) {
               row.put(
-                  c.getName(), ((Map<String, Object>) row.get(c.getName())).get("ontologyTermIRI"));
+                  c.getName(), ((Map<String, IRI>) row.get(c.getName())).get("ontologyTermIRI"));
             } else {
               // list of maps
               List<Map<String, Object>> listOfObjects =
@@ -183,6 +185,11 @@ public class LinkedDataService {
       result.put("@context", context);
       result.put("@id", path + table.getName());
       result.put(table.getName(), data);
+
+      SimpleModule module = new SimpleModule();
+      module.addDeserializer(IRI.class, new IriDeserializer());
+      module.addSerializer(IRI.class, new IriSerializer());
+      jsonMapper.registerModule(module);
 
       writer.append(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
     } catch (Exception e) {
